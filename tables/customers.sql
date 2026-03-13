@@ -1,5 +1,6 @@
-CREATE TABLE Products (
-    product_id INT PRIMARY KEY,
-    product_name VARCHAR(100),
-    price DECIMAL(10,2)
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(20)
 );
