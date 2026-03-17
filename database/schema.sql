@@ -40,6 +40,7 @@ CREATE TABLE Order_Items (
 
 CREATE TABLE Payments (
     payment_id INT PRIMARY KEY,
+    
     order_id INT,
     amount DECIMAL(10,2),
     payment_method VARCHAR(50),
