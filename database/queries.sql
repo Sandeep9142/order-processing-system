@@ -273,12 +273,28 @@ LIMIT 1;
 
 -- 27. Find products with declining monthly order quantities.
 
-SELECT product_id,
-MONTH(order_date) m,
-SUM(quantity) qty
-FROM Orders o
-JOIN Order_Items oi ON o.order_id=oi.order_id
-GROUP BY product_id,m;
+WITH monthly_sales AS (
+    SELECT 
+        oi.product_id,
+        MONTH(o.order_date) AS month,
+        SUM(oi.quantity) AS qty
+    FROM Orders o
+    JOIN Order_Items oi 
+        ON o.order_id = oi.order_id
+    GROUP BY oi.product_id, MONTH(o.order_date)
+),
+sales_with_prev AS (
+    SELECT 
+        product_id,
+        month,
+        qty,
+        LAG(qty) OVER (PARTITION BY product_id ORDER BY month) AS prev_qty
+    FROM monthly_sales
+)
+SELECT DISTINCT product_id
+FROM sales_with_prev
+WHERE prev_qty IS NOT NULL
+  AND qty < prev_qty;
 
 
 -- 28. Find inventory gaps using CTE to compare ordered vs on-hand quantities.
@@ -297,15 +313,25 @@ JOIN Inventory i ON o.product_id=i.product_id;
 
 -- 29. Compute running total of payments per customer using CTE.
 
-SELECT c.customer_id,
-p.payment_date,
-SUM(p.amount) OVER(
-PARTITION BY c.customer_id
-ORDER BY p.payment_date
-) AS running_total
-FROM Customers c
-JOIN Orders o ON c.customer_id=o.customer_id
-JOIN Payments p ON o.order_id=p.order_id;
+WITH payment_data AS (
+    SELECT 
+        c.customer_id,
+        p.payment_date,
+        p.amount
+    FROM Customers c
+    JOIN Orders o 
+        ON c.customer_id = o.customer_id
+    JOIN Payments p 
+        ON o.order_id = p.order_id
+)
+SELECT 
+    customer_id,
+    payment_date,
+    SUM(amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY payment_date
+    ) AS running_total
+FROM payment_data;
 
 -- 30. Identify products that go out of stock after orders.
 
