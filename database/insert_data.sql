@@ -14,8 +14,8 @@ INSERT INTO Customers VALUES
 (12,'Anjali Sharma','anjali@gmail.com','9876543221'),
 (13,'Ritu Singh','ritu@gmail.com','9876543222'),
 (14,'Manish Gupta','manish@gmail.com','9876543223'),
-(15,'Deepak Jain','deepak@gmail.com','9876543224');
-
+(15,'Deepak Jain','deepak@gmail.com','9876543224'),
+(16,'sandeep','sandeep@gmail.com','9876233224');
 
 
 INSERT INTO Products VALUES
